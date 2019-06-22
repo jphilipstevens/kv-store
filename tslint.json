@@ -1,0 +1,12 @@
+{
+  "extends": "@jphilipstevens/tslint-base-config",
+  "rules": {
+    "interface-name": false,
+    "no-console":false,
+    "max-classes-per-file": false,
+    "array-type": false,
+    "object-literal-sort-keys": false,
+    "one-variable-per-declaration": false,
+    "no-angle-bracket-type-assertion": false
+  }
+}

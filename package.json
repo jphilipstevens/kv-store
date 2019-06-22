@@ -1,0 +1,73 @@
+{
+  "name": "@jphilipstevens/kv-store",
+  "version": "1.0.0",
+  "private": true,
+  "description": "my TS implementation of a kv-store",
+  "keywords": [],
+  "author": "",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "scripts": {
+    "compile": "tsc",
+    "prebuild": "npm run test",
+    "build": "npm run compile",
+    "clean": "rm -rf ./node_modules/.cache && rm -rf ./lib",
+    "lint": "tslint -t verbose -c ./tslint.json 'src/**/*.ts'",
+    "lint:fix": "tslint --fix -t verbose -c ./tslint.json 'src/**/*.ts'",
+    "test": "npm run lint && npm run test:spec",
+    "test:spec": "jest",
+    "commit": "npx git-cz",
+    "semantic-release": "semantic-release"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/core": "*",
+    "@babel/preset-env": "*",
+    "@babel/preset-typescript": "*",
+    "@jphilipstevens/tslint-base-config": "^1.0.2",
+    "@semantic-release/commit-analyzer": "^6.1.0",
+    "@semantic-release/git": "^7.0.8",
+    "@semantic-release/github": "^5.2.10",
+    "@semantic-release/npm": "^5.1.10",
+    "@semantic-release/release-notes-generator": "^7.1.4",
+    "@types/jest": "^24.0.13",
+    "@types/node": "^12.0.10",
+    "@types/uuid": "^3.4.4",
+    "babel-jest": "*",
+    "condition-circle": "^2.0.2",
+    "cz-conventional-changelog": "^2.1.0",
+    "jest": "^24.8.0",
+    "semantic-release": "^15.13.12",
+    "ts-node": "^8.3.0",
+    "tslint": "^5.18.0",
+    "tslint-config-airbnb": "^5.11.1",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-eslint-rules": "^5.4.0",
+    "typescript": "latest",
+    "uuid": "^3.3.2"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "jest": {
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
+    "coverageReporters": [
+      "json",
+      "lcov",
+      "text-summary"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 100,
+        "functions": 100,
+        "lines": 100,
+        "statements": 100
+      }
+    }
+  }
+}

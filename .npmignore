@@ -1,0 +1,26 @@
+# IDE Files
+.idea
+.vscode
+
+# ACCP Files
+sonar-project.properties
+accp.yml
+gradle
+gradle.properties
+gradlew
+gradlew.bat
+build
+*.fpr
+*.gradle
+prepublish.sh
+
+# Project files not required for PCF
+node_modules
+/src
+/test
+/tests
+*.md
+*.log
+/.nyc_output
+/coverage
+/mochawesome-report
