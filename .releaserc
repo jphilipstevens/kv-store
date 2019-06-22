@@ -2,7 +2,6 @@
   verifyConditions: [
     '@semantic-release/git',
     '@semantic-release/github',
-    '@semantic-release/npm',
     'condition-circle'
   ],
 
@@ -15,13 +14,11 @@
   ],
 
   prepare: [
-    '@semantic-release/npm',
     '@semantic-release/git'
   ],
 
   publish: [
-    '@semantic-release/github',
-    '@semantic-release/npm'
+    '@semantic-release/github'
   ],
 
   success: [
