@@ -185,5 +185,4 @@ describe("Store", () => {
       expect(store.getValueAtTime(key, dateToFetch)).toBe(value);
     });
   });
-  
 });
