@@ -3,7 +3,7 @@ import { getCurrentUTCTimestamp } from "./utc-timestamp";
 
 type Predicate<V> = (value: HashNode<V>) => boolean;
 
-export class HashNode<V> {
+class HashNode<V> {
   public readonly value: V;
   public readonly timestamp: number;
 
@@ -25,14 +25,26 @@ export class Store<V> {
     this.size = 0;
   }
 
+  /** 
+   * @returns the number of objects saved (excluding updated versions)
+   */
   public getSize(): number {
     return this.size;
   }
 
-  public containsKey(key: string):  boolean {
+  /**
+   * @param key A key that may or may not be in the Store
+   * @returns true if they key is in the store, false otherwise
+   */
+  public containsKey(key: string): boolean {
     return this.map.hasOwnProperty(key);
   }
 
+  /**
+   * 
+   * @param key a unique key to save the value
+   * @param value some data to persist
+   */
   public put(key: string, value: V): void {
     const node = new HashNode(value);
     if (!this.containsKey(key)) {
@@ -43,7 +55,12 @@ export class Store<V> {
     }
   }
 
-  public getValue(key: string): V |  undefined {
+  /**
+   * 
+   * @param key a unique key bound to the value being requested
+   * @returns the latest version of the saved value, or undefined if no key could be found
+   */
+  public getValue(key: string): V | undefined {
     if (this.containsKey(key)) {
       const bucket = this.map[key];
       const latestValue = bucket.length - 1;
@@ -53,6 +70,12 @@ export class Store<V> {
     }
   }
 
+  /**
+   * 
+   * @param key a unique key bound to the value being requested
+   * @param timestamp a timestamp that can be used for getting a version. Note timestamp matches are exact
+   * @returns the saved value at the timestamp requested, or undefined if no key could be found
+   */
   public getValueAtTime(key: string, timestamp: number): V | undefined {
     return this.find(key, (node) => node.timestamp === timestamp);
   }
@@ -61,9 +84,9 @@ export class Store<V> {
     if (this.containsKey(key)) {
       const bucket = this.map[key];
       const foundNode = bucket.find(predicate);
-      if(isDefined<HashNode<V>>(foundNode)) {
+      if (isDefined<HashNode<V>>(foundNode)) {
         return foundNode.value;
-      } else  {
+      } else {
         return undefined;
       }
     } else {

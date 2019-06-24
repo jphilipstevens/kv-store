@@ -1,20 +1,6 @@
 import { v4 } from 'uuid';
-import { HashNode, Store } from '../kv-store';
-import * as UTCTimestamp from "../utc-timestamp";
+import { Store } from '../kv-store';
 
-describe("HashNode", () => {
-  it("should create a node with a timestamp", () => {
-    const now = Date.now();
-    jest
-      .spyOn(UTCTimestamp, "getCurrentUTCTimestamp")
-      .mockImplementationOnce(() => now);
-    const value = v4();
-    const node = new HashNode(value);
-
-    expect(node.value).toBe(value);
-    expect(node.timestamp).toBe(now);
-  });
-});
 
 describe("Store", () => {
   describe('constructor', () => {
