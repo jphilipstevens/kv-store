@@ -16,6 +16,7 @@
     "lint:fix": "tslint --fix -t verbose -c ./tslint.json 'src/**/*.ts'",
     "test": "npm run lint && npm run test:spec",
     "test:spec": "jest",
+    "test:integration": "jest --config=./jest.integration.config.js",
     "commit": "npx git-cz",
     "semantic-release": "semantic-release",
     "semantic-release:test": "semantic-release --dry-run --ci false"
@@ -50,25 +51,6 @@
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
-    }
-  },
-  "jest": {
-    "collectCoverage": true,
-    "collectCoverageFrom": [
-      "src/**/*.ts"
-    ],
-    "coverageReporters": [
-      "json",
-      "lcov",
-      "text-summary"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 100,
-        "functions": 100,
-        "lines": 100,
-        "statements": 100
-      }
     }
   }
 }

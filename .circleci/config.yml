@@ -16,6 +16,9 @@ jobs:
       - run:
           name: Run full build
           command: npm run build
+      - run:
+          name: Run integration Tests
+          command: npm run test:integration
       - store_artifacts:
           path: coverage
       - save_cache:
