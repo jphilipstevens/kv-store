@@ -79,6 +79,19 @@ describe("Store", () => {
     });
   });
 
+  describe("put", () => {
+    it("should store a value an return the timestamp that it was saved", () => {
+      const now = Date.now();
+      jest
+        .spyOn(global.Date, 'now')
+        .mockImplementation(() => now);
+      const store = new Store();
+
+      const timestamp = store.put(v4(), v4());
+      expect(timestamp).toBe(now);
+    });
+  });
+
   describe('getValue', () => {
     it('return undefined for an empty store', () => {
       const store = new Store<string>();
@@ -118,20 +131,26 @@ describe("Store", () => {
   describe("getValueAtTime", () => {
     it("should return undefined for an empty store", () => {
       const store = new Store<string>();
-      const timestamp = new Date().getTime();
+      const timestamp = Date.now();
       expect(store.getValueAtTime(v4(), timestamp)).toBe(undefined);
     });
 
+    it("should return undefined when passed undefined key and timestamp", () => {
+      const store = new Store<string>();
+      expect(store.getValueAtTime(undefined, undefined)).toBe(undefined);
+    });
+
     it("should return undefined if no date matches", () => {
+      const now = Date.now();
+      const millisecondsInAMinute = 60000;
+      const millisecondsInAnHour = 3.6e+6;
+
       jest
         .spyOn(global.Date, 'now')
         .mockImplementation(() => {
-          const randomYear = 2019;
-          const randomMonth = Math.floor(Math.random() * 12) + 1;
-          const randomDay = randomMonth === 2
-            ? Math.floor(Math.random() * 28) + 1
-            : Math.floor(Math.random() * 30) + 1;
-          return (new Date(randomYear, randomMonth, randomDay)).getTime();
+          const randomTimeToAdd = Math.floor(Math.random() * millisecondsInAMinute) + millisecondsInAnHour
+          const mockedNowTime =  now + randomTimeToAdd;
+          return mockedNowTime;
         });
 
       const store = new Store<string>();
@@ -139,25 +158,28 @@ describe("Store", () => {
       store.put(key, v4());
       store.put(key, v4());
       store.put(key, v4());
-      const timestamp = new Date(2020, 1, 1).getTime();
+      const timestamp = now - millisecondsInAMinute;
       expect(store.getValueAtTime(key, timestamp)).toBe(undefined);
     });
 
     it("should return the value that matched the saved date", () => {
-      const dateToSave = new Date('2019-05-14T11:01:58.135Z');
+      const now = Date.now();
+      const millisecondsInAMinute = 60000;
       const millisecondsInAnHour = 3.6e+6;
-      const dateToFetch = dateToSave.getTime() + millisecondsInAnHour;
+
       jest
         .spyOn(global.Date, 'now')
-        .mockImplementationOnce(() => dateToSave.getTime())
-        .mockImplementationOnce(() => dateToFetch)
-        .mockImplementationOnce(() => dateToSave.getTime() + (millisecondsInAnHour * 2));
+        .mockImplementation(() => {
+          const randomTimeToAdd = Math.floor(Math.random() * millisecondsInAMinute) + millisecondsInAnHour
+          const mockedNowTime =  now + randomTimeToAdd;
+          return mockedNowTime;
+        });
 
       const store = new Store<string>();
       const key = v4();
       const value = v4();
       store.put(key, v4());
-      store.put(key, value);
+      const dateToFetch = store.put(key, value);
       store.put(key, v4());
     
       expect(store.getValueAtTime(key, dateToFetch)).toBe(value);

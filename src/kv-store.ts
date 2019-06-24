@@ -33,7 +33,7 @@ export class Store<V> {
     return this.map.hasOwnProperty(key);
   }
 
-  public put(key: string, value: V): void {
+  public put(key: string, value: V): number {
     const node = new HashNode(value);
     if (!this.containsKey(key)) {
       this.size++;
@@ -41,6 +41,7 @@ export class Store<V> {
     } else {
       this.map[key].push(node)
     }
+    return node.timestamp;
   }
 
   public getValue(key: string): V |  undefined {
