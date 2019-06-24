@@ -26,7 +26,7 @@
     "@babel/core": "*",
     "@babel/preset-env": "*",
     "@babel/preset-typescript": "*",
-    "@jphilipstevens/tslint-base-config": "^1.0.2",
+    "@jphilipstevens/tslint-base-config": "^2.0.0",
     "@semantic-release/commit-analyzer": "^6.1.0",
     "@semantic-release/git": "^7.0.8",
     "@semantic-release/github": "^5.2.10",

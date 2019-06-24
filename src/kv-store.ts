@@ -15,7 +15,7 @@ export class HashNode<V> {
 
 export class Store<V> {
   private readonly map: {
-    [key: string]: HashNode<V>[];
+    [key: string]: Array<HashNode<V>>;
   };
 
   private size: number;
