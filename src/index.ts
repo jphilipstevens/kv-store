@@ -1,1 +1,5 @@
-export const identity = (x: any): any => x;
+import { Store } from "./kv-store";
+
+export {
+  Store
+};

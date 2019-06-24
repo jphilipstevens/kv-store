@@ -1,10 +1,15 @@
-export type Predicate<V> = (value: HashNode<V>) => boolean;
+import { isDefined } from "./function-extensions";
+import { getCurrentUTCTimestamp } from "./utc-timestamp";
+
+type Predicate<V> = (value: HashNode<V>) => boolean;
 
 export class HashNode<V> {
   public readonly value: V;
+  public readonly timestamp: number;
 
   constructor(value: V) {
     this.value = value;
+    this.timestamp = getCurrentUTCTimestamp();
   }
 }
 
@@ -43,6 +48,24 @@ export class Store<V> {
       const bucket = this.map[key];
       const latestValue = bucket.length - 1;
       return bucket[latestValue].value;
+    } else {
+      return undefined
+    }
+  }
+
+  public getValueAtTime(key: string, timestamp: number): V | undefined {
+    return this.find(key, (node) => node.timestamp === timestamp);
+  }
+
+  private find(key: string, predicate: Predicate<V>): V | undefined {
+    if (this.containsKey(key)) {
+      const bucket = this.map[key];
+      const foundNode = bucket.find(predicate);
+      if(isDefined<HashNode<V>>(foundNode)) {
+        return foundNode.value;
+      } else  {
+        return undefined;
+      }
     } else {
       return undefined
     }
