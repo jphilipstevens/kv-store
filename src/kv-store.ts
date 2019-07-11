@@ -1,8 +1,6 @@
 import { isDefined } from "./function-extensions";
 import { getCurrentUTCTimestamp } from "./utc-timestamp";
 
-type Predicate<V> = (value: HashNode<V>) => boolean;
-
 export class HashNode<V> {
   public readonly value: V;
   public readonly timestamp: number;
@@ -29,7 +27,7 @@ export class Store<V> {
     return this.size;
   }
 
-  public containsKey(key: string):  boolean {
+  public containsKey(key: string): boolean {
     return this.map.hasOwnProperty(key);
   }
 
@@ -44,7 +42,7 @@ export class Store<V> {
     return node.timestamp;
   }
 
-  public getValue(key: string): V |  undefined {
+  public getValue(key: string): V | undefined {
     if (this.containsKey(key)) {
       const bucket = this.map[key];
       const latestValue = bucket.length - 1;
@@ -55,20 +53,33 @@ export class Store<V> {
   }
 
   public getValueAtTime(key: string, timestamp: number): V | undefined {
-    return this.find(key, (node) => node.timestamp === timestamp);
+    const map = this.map[key];
+    if (isDefined(map)) {
+      return this.getValueFuzzy(map, timestamp, 0, map.length - 1);
+    } else {
+      return undefined;
+    }
   }
 
-  private find(key: string, predicate: Predicate<V>): V | undefined {
-    if (this.containsKey(key)) {
-      const bucket = this.map[key];
-      const foundNode = bucket.find(predicate);
-      if(isDefined<HashNode<V>>(foundNode)) {
-        return foundNode.value;
-      } else  {
-        return undefined;
+  private getValueFuzzy(nodes: Array<HashNode<V>>, timestamp: number, left: number, right: number): V | undefined {
+    if (right > left) {
+      const mid = Math.trunc((left + right + 1) / 2);
+      if (nodes[mid].timestamp < timestamp) {
+        return this.getValueFuzzy(nodes, timestamp, mid, right);
+      } else {
+        let n: HashNode<V> | undefined;
+        for (let i = mid; i >= left; i--) {
+          if (nodes[i].timestamp <= timestamp) {
+            n = nodes[i];
+            break;
+          }
+        }
+        return isDefined(n) ? n.value : undefined;
       }
     } else {
-      return undefined
+      return nodes[right].timestamp <= timestamp
+        ? nodes[right].value
+        : undefined;
     }
   }
 }

@@ -129,6 +129,43 @@ describe("Store", () => {
   });
 
   describe("getValueAtTime", () => {
+
+    const fuzzyTest = (sampleSize: number) => () => {
+
+      let now = 0;
+      const millisecondsInAMinute = 60000;
+
+      jest
+        .spyOn(global.Date, 'now')
+        .mockImplementation(() => {
+          const dateToSave = now + millisecondsInAMinute;
+          now = dateToSave;
+          return dateToSave;
+        });
+
+      const store = new Store<string>();
+      const arr = [];
+      const key = v4();
+      for (let i = 0; i < sampleSize; i++) {
+        const value = v4();
+        store.put(key, value);
+        arr.push({ value, now });
+      }
+
+      expect(store.getValueAtTime(key, arr[0].now - 1)).toBe(undefined);
+      expect(store.getValueAtTime(key, arr[0].now)).toBe(arr[0].value);
+      expect(store.getValueAtTime(key, arr[0].now + 1)).toBe(arr[0].value);
+
+      expect(store.getValueAtTime(key, arr[sampleSize - 1].now)).toBe(arr[sampleSize - 1].value);
+      expect(store.getValueAtTime(key, arr[sampleSize - 1].now + 1)).toBe(arr[sampleSize - 1].value);
+
+      const randomIndexToValidate = Math.trunc(Math.random() * sampleSize);
+      const nodeToSearch = arr[randomIndexToValidate].now;
+      expect(store.getValueAtTime(key, nodeToSearch.now)).toBe(nodeToSearch.value);
+      expect(store.getValueAtTime(key, nodeToSearch.now + 1)).toBe(nodeToSearch.value);
+
+    }
+
     it("should return undefined for an empty store", () => {
       const store = new Store<string>();
       const timestamp = Date.now();
@@ -140,49 +177,7 @@ describe("Store", () => {
       expect(store.getValueAtTime(undefined, undefined)).toBe(undefined);
     });
 
-    it("should return undefined if no date matches", () => {
-      const now = Date.now();
-      const millisecondsInAMinute = 60000;
-      const millisecondsInAnHour = 3.6e+6;
-
-      jest
-        .spyOn(global.Date, 'now')
-        .mockImplementation(() => {
-          const randomTimeToAdd = Math.floor(Math.random() * millisecondsInAMinute) + millisecondsInAnHour
-          const mockedNowTime =  now + randomTimeToAdd;
-          return mockedNowTime;
-        });
-
-      const store = new Store<string>();
-      const key = v4();
-      store.put(key, v4());
-      store.put(key, v4());
-      store.put(key, v4());
-      const timestamp = now - millisecondsInAMinute;
-      expect(store.getValueAtTime(key, timestamp)).toBe(undefined);
-    });
-
-    it("should return the value that matched the saved date", () => {
-      const now = Date.now();
-      const millisecondsInAMinute = 60000;
-      const millisecondsInAnHour = 3.6e+6;
-
-      jest
-        .spyOn(global.Date, 'now')
-        .mockImplementation(() => {
-          const randomTimeToAdd = Math.floor(Math.random() * millisecondsInAMinute) + millisecondsInAnHour
-          const mockedNowTime =  now + randomTimeToAdd;
-          return mockedNowTime;
-        });
-
-      const store = new Store<string>();
-      const key = v4();
-      const value = v4();
-      store.put(key, v4());
-      const dateToFetch = store.put(key, value);
-      store.put(key, v4());
-    
-      expect(store.getValueAtTime(key, dateToFetch)).toBe(value);
-    });
+    it("should return the correct historical elements based on a fuzzy search search of <= timestamp", fuzzyTest(100));
+    it("should return the correct historical elements based on a fuzzy search search of <= timestamp for even a simple value saved", fuzzyTest(1));
   });
 });
