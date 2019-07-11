@@ -64,17 +64,10 @@ export class Store<V> {
   private getValueFuzzy(nodes: Array<HashNode<V>>, timestamp: number, left: number, right: number): V | undefined {
     if (right > left) {
       const mid = Math.trunc((left + right + 1) / 2);
-      if (nodes[mid].timestamp < timestamp) {
+      if (nodes[mid].timestamp <= timestamp) {
         return this.getValueFuzzy(nodes, timestamp, mid, right);
       } else {
-        let n: HashNode<V> | undefined;
-        for (let i = mid; i >= left; i--) {
-          if (nodes[i].timestamp <= timestamp) {
-            n = nodes[i];
-            break;
-          }
-        }
-        return isDefined(n) ? n.value : undefined;
+        return this.getValueFuzzy(nodes, timestamp, left, mid - 1);
       }
     } else {
       return nodes[right].timestamp <= timestamp
