@@ -55,24 +55,28 @@ export class Store<V> {
   public getValueAtTime(key: string, timestamp: number): V | undefined {
     const map = this.map[key];
     if (isDefined(map)) {
-      return this.getValueFuzzy(map, timestamp, 0, map.length - 1);
+      return this.searchForTimestamp(map, timestamp, 0, map.length - 1);
     } else {
       return undefined;
     }
   }
 
-  private getValueFuzzy(nodes: Array<HashNode<V>>, timestamp: number, left: number, right: number): V | undefined {
-    if (right > left) {
+  private searchForTimestamp(nodes: Array<HashNode<V>>, timestamp: number, left: number, right: number): V | undefined {
+    /* istanbul ignore else  */
+    if (right >= left) {
+      if (right === left) {
+        return nodes[right].timestamp <= timestamp
+          ? nodes[right].value
+          : undefined;
+      }
       const mid = Math.trunc((left + right + 1) / 2);
       if (nodes[mid].timestamp <= timestamp) {
-        return this.getValueFuzzy(nodes, timestamp, mid, right);
+        return this.searchForTimestamp(nodes, timestamp, mid, right);
       } else {
-        return this.getValueFuzzy(nodes, timestamp, left, mid - 1);
+        return this.searchForTimestamp(nodes, timestamp, left, mid - 1);
       }
-    } else {
-      return nodes[right].timestamp <= timestamp
-        ? nodes[right].value
-        : undefined;
     }
+    /* istanbul ignore next */
+    return undefined;
   }
 }

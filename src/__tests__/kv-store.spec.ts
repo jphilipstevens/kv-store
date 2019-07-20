@@ -160,7 +160,7 @@ describe("Store", () => {
       expect(store.getValueAtTime(key, arr[sampleSize - 1].now + 1)).toBe(arr[sampleSize - 1].value);
 
       const randomIndexToValidate = Math.trunc(Math.random() * sampleSize);
-      const nodeToSearch = arr[randomIndexToValidate].now;
+      const nodeToSearch = arr[randomIndexToValidate];
       expect(store.getValueAtTime(key, nodeToSearch.now)).toBe(nodeToSearch.value);
       expect(store.getValueAtTime(key, nodeToSearch.now + 1)).toBe(nodeToSearch.value);
 
